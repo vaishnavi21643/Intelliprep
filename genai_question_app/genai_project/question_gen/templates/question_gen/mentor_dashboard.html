@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Dashboard - InterviewPrep Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #800000;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            max-width: 1100px;
+            margin: 40px auto;
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #800000;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .welcome {
+            text-align: center;
+            font-size: 1.6em;
+            color: #4CAF50;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(76, 175, 80, 0.1);
+            border-radius: 15px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 6px solid #FFC72C;
+        }
+
+        .info-box h3 {
+            color: #800000;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-box p {
+            font-size: 1.2em;
+            line-height: 1.8;
+            color: #555;
+        }
+
+        .availability {
+            background: #e8f5e8;
+            border-left-color: #4CAF50;
+        }
+
+        .chat-list, .schedule-box {
+            background: #f0f8ff;
+            border-left-color: #2196F3;
+        }
+
+        .chat-item, .request-item {
+            background: white;
+            padding: 15px;
+            margin: 12px 0;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .chat-item a, .request-item button {
+            background: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .chat-item a:hover, .request-item button:hover {
+            background: #1976D2;
+            transform: scale(1.05);
+        }
+
+        /* Calendar Drawer */
+        .calendar-toggle {
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+            background: #FFC72C;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8em;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .calendar-toggle:hover {
+            color: #800000;
+            transform: scale(1.1);
+        }
+
+        .calendar-drawer {
+            position: fixed;
+            right: -480px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.3);
+            padding: 30px;
+            overflow-y: auto;
+            transition: right 0.4s ease;
+            z-index: 999;
+            backdrop-filter: blur(10px);
+        }
+
+        .calendar-drawer.open {
+            right: 0;
+        }
+
+        .drawer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #800000;
+        }
+
+        .drawer-header h2 {
+            color: #800000;
+            font-size: 2em;
+        }
+
+        .close-drawer {
+            font-size: 2em;
+            cursor: pointer;
+            color: #800000;
+        }
+
+        .request-item .status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .status.pending { background: #fff3cd; color: #856404; }
+        .status.accepted { background: #d4edda; color: #155724; }
+        .status.rejected { background: #f8d7da; color: #721c24; }
+
+        .btn-group {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .btn {
+            padding: 18px 50px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 0 20px;
+            transition: all 0.3s;
+        }
+
+        .quiz-btn { background: #800000; color: white; }
+        .quiz-btn:hover { background: #FFC72C; color: #800000; transform: scale(1.05); }
+
+        .meet-btn { background: #FFC72C; color: #800000; }
+        .meet-btn:hover { background: #800000; color: white; transform: scale(1.05); }
+
+        .logout-btn { background: #ff9800; color: white; margin-top: 20px; }
+        .logout-btn:hover { background: #e68a00; }
+
+        @media (max-width: 768px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .calendar-drawer { width: 100%; right: -100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mentor Dashboard</h1>
+        <div class="welcome">
+            <i class="fas fa-user-graduate"></i> Welcome back, <strong>{{ user.username }}</strong>!<br>
+            You're logged in as an <strong>Interviewer/Mentor</strong>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="info-box availability">
+                <h3><i class="fas fa-clock"></i> Availability Message</h3>
+                <p>"I'm available for mock interviews on System Design, Java, and Microservices. Feel free to book a session!"</p>
+            </div>
+
+            <div class="info-box">
+                <h3><i class="fas fa-briefcase"></i> Your Stats</h3>
+                <p>
+                    <strong>Package:</strong> {{ user.package|default:"Not set" }}<br>
+                    <strong>Company:</strong> {{ user.company|default:"Not set" }}<br>
+                    <strong>Role:</strong> {{ user.role|default:"Not set" }}
+                </p>
+            </div>
+
+            <div class="info-box">
+                <h3><i class="fas fa-lightbulb"></i> Skills & Expertise</h3>
+                <p>{{ user.skills|default:"Java, System Design, Leadership, DSA" }}</p>
+            </div>
+
+            <div class="info-box">
+                <h3><i class="fas fa-quote-left"></i> Bio</h3>
+                <p>{{ user.bio|default:"Passionate mentor helping students crack high-package jobs at top tech companies." }}</p>
+            </div>
+        </div>
+
+        <!-- Pending Requests -->
+        <div class="info-box schedule-box" style="grid-column: span 2;">
+            <h3><i class="fas fa-calendar-alt"></i> Pending Interview Requests</h3>
+            {% if pending_requests %}
+                {% for req in pending_requests %}
+                    <div class="request-item">
+                        <div>
+                            <strong>{{ req.student.username }}</strong><br>
+                            <strong>Date:</strong> {{ req.requested_date|date:"M d, Y" }} at {{ req.requested_date|time:"h:i A" }}<br>
+                            <span class="status pending">Pending</span>
+                        </div>
+                        <div>
+                            <a href="{% url 'accept_request' req.id %}">
+                                <button>Accept</button>
+                            </a>
+                            <a href="{% url 'reject_request' req.id %}">
+                                <button style="background:#f44336;">Reject</button>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No pending requests.</p>
+            {% endif %}
+        </div>
+
+        <!-- Active Chats -->
+        <div class="info-box chat-list" style="grid-column: span 2;">
+            <h3><i class="fas fa-comments"></i> Active Chats</h3>
+            {% if active_chats %}
+                {% for student in active_chats %}
+                    <div class="chat-item">
+                        <div>
+                            <strong>{{ student.username }}</strong><br>
+                            <small>Last active: {{ student.last_message_time|date:"M d, h:i A" }}</small>
+                        </div>
+                        <a href="{% url 'chat' student.id %}">Open Chat</a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No active chats yet.</p>
+            {% endif %}
+        </div>
+
+        <div class="btn-group">
+            <a href="{% url 'select_topic' %}">
+                <button class="btn quiz-btn">Practice Quiz</button>
+            </a>
+            <a href="{% url 'start_manual_meet' %}">
+                <button class="btn meet-btn">Start Interview Session</button>
+            </a>
+            <a href="{% url 'logout' %}">
+                <button class="btn logout-btn">Logout</button>
+            </a>
+        </div>
+    </div>
+
+    <!-- Calendar Drawer Toggle -->
+    <div class="calendar-toggle" onclick="toggleDrawer()">
+        <i class="fas fa-calendar-week"></i>
+    </div>
+
+    <!-- Calendar Drawer -->
+    <div class="calendar-drawer" id="calendarDrawer">
+        <div class="drawer-header">
+            <h2>All Scheduled Interviews</h2>
+            <span class="close-drawer" onclick="toggleDrawer()">&times;</span>
+        </div>
+
+        {% if all_requests %}
+            {% for req in all_requests %}
+                <div class="request-item">
+                    <div>
+                        <strong>{{ req.student.username }}</strong><br>
+                        <strong>Date:</strong> {{ req.requested_date|date:"l, M d, Y" }}<br>
+                        <strong>Time:</strong> {{ req.requested_date|time:"h:i A" }}<br>
+                        <span class="status {{ req.status }}">{{ req.get_status_display }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No scheduled interviews yet.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleDrawer() {
+            document.getElementById('calendarDrawer').classList.toggle('open');
+        }
+    </script>
+</body>
+</html>
